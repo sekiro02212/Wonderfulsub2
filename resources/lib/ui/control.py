@@ -267,7 +267,17 @@ def _DASH_HOOK(item):
 
 @hook_mimetype('application/vnd.apple.mpegurl')
 def _HLS_HOOK(item):
-    import inputstreamhelper
+   r = http.send_request(item.getPath())
+    if r.ok:
+        lines = r.text.split('\n')
+        for index, line in enumerate(lines):
+            # On the line below you can change the number to one of: 240, 360, 480, 720, 1080.
+            # Keep the 'x' and the comma as they are.
+            if 'x480,' in line:
+                item.setPath(lines[index+1])
+                return item
+    return item 
+import inputstreamhelper
     is_helper = inputstreamhelper.Helper('hls')
     if is_helper.check_inputstream():
         item.setProperty('inputstreamaddon', is_helper.inputstream_addon)
